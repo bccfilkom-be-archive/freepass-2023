@@ -8,15 +8,10 @@ const userSchema = mongoose.Schema({
   },
   password: {
     required: true,
-    select: false,
     type: String,
   },
   fullName: String,
-  NIM: {
-    required: true,
-    unique: true,
-    type: String,
-  },
+  semester: Number,
   _class: [{ type: mongoose.Schema.Types.ObjectId, ref: "Class" }],
 });
 
