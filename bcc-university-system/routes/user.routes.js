@@ -2,13 +2,11 @@ const express = require("express");
 const bcyrpt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const isLogin = require('../middlewares/auth.middleware')
+const Class = require("../models/class");
+const Course = require("../models/course");
+const isLogin = require("../middlewares/auth.middleware");
 
 const router = express.Router();
-
-router.get("/", (req, res) => {
-  res.send("test");
-});
 
 router.post("/register", async (req, res) => {
   const emailExists = await User.findOne({ username: req.body.username });
@@ -26,6 +24,7 @@ router.post("/register", async (req, res) => {
     username: req.body.username,
     password: hashedPassword,
     fullName: req.body.fullName,
+    semester: req.body.semester,
   });
 
   try {
@@ -67,11 +66,102 @@ router.get("/:id/account", isLogin, async (req, res) => {
       .json({ error: true, message: "User does not exist" });
   }
 
-  res.status(200).json(user)
+  res.status(200).json(user);
 });
-// router.post("/:id/account/edit");
-// router.route("/:id/classes").get().post();
-// router.delete("/:userID/classes/:classID");
-// router.get("/:userID/classes/:classID/students");
+
+router.patch("/:id/account/edit", isLogin, async (req, res) => {
+  if (req.body.username) {
+    await User.findByIdAndUpdate(req.params.id, {
+      username: req.body.username,
+    }).catch((err) => console.error(err));
+  } else if (req.body.password) {
+    const salt = await bcyrpt.genSalt(10);
+    const hashedPassword = await bcyrpt.hash(req.body.password, salt);
+    await User.findByIdAndUpdate(req.params.id, {
+      password: hashedPassword,
+    }).catch((err) => console.error(err));
+  } else if (req.body.fullName) {
+    await User.findByIdAndUpdate(req.params.id, {
+      fullName: req.body.fullName,
+    }).catch((err) => console.error(err));
+  } else if (req.body.semester) {
+    await User.findByIdAndUpdate(req.params.id, {
+      semester: Number(req.body.semester),
+    }).catch((err) => console.error(err));
+  } else {
+    return res.status(400).json({ error: true, message: "Field not found" });
+  }
+
+  res.status(200).json({ message: "successfully edited" });
+});
+
+router
+  .route("/:id/classes")
+  .get(isLogin, async (req, res) => {
+    const user = await User.findById(req.params.id).populate({
+      path: "_class",
+      select: "-_student",
+      populate: { path: "_course", select: "name sks -_id" },
+    });
+
+    if (!user) {
+      res.status(404).json({ error: true, message: "User does not exist" });
+    }
+
+    res.status(200).json(user._class);
+  })
+  .post(isLogin, async (req, res) => {
+    try {
+      await User.updateOne(
+        { _id: req.params.id },
+        {
+          $addToSet: { _class: req.body.classId },
+        }
+      );
+      await Class.updateOne(
+        { _id: req.body.classId },
+        {
+          $addToSet: { _student: req.params.id },
+        }
+      );
+
+      res.status(200).json({ message: "successfully added new class" });
+    } catch (error) {
+      res.status(400).json({
+        error: true,
+        message: error,
+      });
+    }
+  });
+
+router.delete("/:userId/classes/:classId", isLogin, async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.params.userId, {
+      $pull: { _class: req.body.classId },
+    });
+    await Class.findByIdAndUpdate(req.body.classId, {
+      $pull: { _student: req.params.userId },
+    });
+
+    res.status(200).json({ message: "successfully dropped a class" });
+  } catch (error) {
+    res.status(400).json({
+      error: true,
+      message: error,
+    });
+  }
+});
+
+router.get("/:userId/classes/:classId/students", async (req, res) => {
+  const classVar = await Class.findById(req.params.classId)
+    .select("-_course")
+    .populate("_student", "fullName");
+
+  if (!classVar) {
+    res.status(404).json({ error: true, message: "Class does not exist" });
+  }
+
+  res.status(200).json(classVar);
+});
 
 module.exports = router;
