@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const Class = require("../models/class");
 const Course = require("../models/course");
-const isLogin = require("../middlewares/auth.middleware");
+const isLoggedIn = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
@@ -56,8 +56,10 @@ router.post("/login", async (req, res) => {
   res.header("Authorization", token);
   res.status(200).json({ token: token });
 });
-// need authorization middleware
-router.get("/:id/account", isLogin, async (req, res) => {
+
+router.use(isLoggedIn);
+
+router.get("/:id/account", async (req, res) => {
   const user = await User.findById(req.params.id);
 
   if (!user) {
@@ -69,7 +71,7 @@ router.get("/:id/account", isLogin, async (req, res) => {
   res.status(200).json(user);
 });
 
-router.patch("/:id/account/edit", isLogin, async (req, res) => {
+router.patch("/:id/account/edit", async (req, res) => {
   if (req.body.username) {
     await User.findByIdAndUpdate(req.params.id, {
       username: req.body.username,
@@ -97,7 +99,7 @@ router.patch("/:id/account/edit", isLogin, async (req, res) => {
 
 router
   .route("/:id/classes")
-  .get(isLogin, async (req, res) => {
+  .get(async (req, res) => {
     const user = await User.findById(req.params.id).populate({
       path: "_class",
       select: "-_student",
@@ -110,7 +112,7 @@ router
 
     res.status(200).json(user._class);
   })
-  .post(isLogin, async (req, res) => {
+  .post(async (req, res) => {
     try {
       await User.updateOne(
         { _id: req.params.id },
@@ -134,7 +136,7 @@ router
     }
   });
 
-router.delete("/:userId/classes/:classId", isLogin, async (req, res) => {
+router.delete("/:userId/classes/:classId", async (req, res) => {
   try {
     await User.findByIdAndUpdate(req.params.userId, {
       $pull: { _class: req.body.classId },
