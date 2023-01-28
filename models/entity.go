@@ -20,7 +20,7 @@ type Users struct {
 
 type Courses struct {
 	gorm.Model
-	Title string `gorm:"type:varchar(255)" json:"title"`
+	Title string `gorm:"type:varchar(255);unique" json:"title"`
 	Course_code string `gorm:"type:varchar(255);unique" json:"course_code"`
 	Sks int `gorm:"type:int" json:"sks"`
 }
@@ -28,8 +28,8 @@ type Courses struct {
 
 type Class struct {
 	gorm.Model
-	Name string `gorm:"type:varchar(255)" json:"name"`
-	Class_code string `gorm:"type:varchar(255)" json:"class_code"`
+	Name string `gorm:"type:varchar(255);unique" json:"name"`
+	Class_code string `gorm:"type:varchar(255);unique" json:"class_code"`
 	Location string `gorm:"type:varchar(255)" json:"location"`
 	CourseID uint
 	Course Courses `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
