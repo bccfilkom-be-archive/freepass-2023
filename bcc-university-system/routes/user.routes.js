@@ -60,7 +60,15 @@ router.post("/login", async (req, res) => {
 router.use(isLoggedIn);
 
 router.get("/:id/account", async (req, res) => {
-  const user = await User.findById(req.params.id);
+  let user;
+
+  if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+    user = await User.findById(req.params.id);
+  } else {
+    return res
+      .status(404)
+      .json({ error: true, message: "User does not exist" });
+  }
 
   if (!user) {
     return res
@@ -100,11 +108,19 @@ router.patch("/:id/account/edit", async (req, res) => {
 router
   .route("/:id/classes")
   .get(async (req, res) => {
-    const user = await User.findById(req.params.id).populate({
-      path: "_class",
-      select: "-_student",
-      populate: { path: "_course", select: "name sks -_id" },
-    });
+    let user;
+
+    if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      user = await User.findById(req.params.id).populate({
+        path: "_class",
+        select: "-_student",
+        populate: { path: "_course", select: "name sks -_id" },
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ error: true, message: "User does not exist" });
+    }
 
     if (!user) {
       res.status(404).json({ error: true, message: "User does not exist" });
@@ -155,9 +171,17 @@ router.delete("/:userId/classes/:classId", async (req, res) => {
 });
 
 router.get("/:userId/classes/:classId/students", async (req, res) => {
-  const classVar = await Class.findById(req.params.classId)
-    .select("-_course")
-    .populate("_student", "fullName");
+  let classVar;
+
+  if (req.params.classId.match(/^[0-9a-fA-F]{24}$/)) {
+    classVar = await Class.findById(req.params.classId)
+      .select("-_course")
+      .populate("_student", "fullName");
+  } else {
+    return res
+      .status(404)
+      .json({ error: true, message: "Class does not exist" });
+  }
 
   if (!classVar) {
     res.status(404).json({ error: true, message: "Class does not exist" });
