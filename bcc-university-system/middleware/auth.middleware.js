@@ -10,7 +10,10 @@ module.exports = (req, res, next) => {
         } catch (error) {
             res
               .status(400)
-              .json({ error: true, message: "Wrong Token" });
+              .json({
+                error: true,
+                message: "Please login to access this resource",
+              });
         }
     } else {
         res.status(401).json({ error: true, message: "Please login to access this resource" });
