@@ -13,7 +13,8 @@ class Course extends Model
         return $this->hasMany(Course::class);
     }
 
-    public function studyProgram() {
-        return $this->belongsTo(StudyProgram::class);
-    }
+    protected $fillable = [
+        'name',
+        'course_credit'
+    ];
 }
