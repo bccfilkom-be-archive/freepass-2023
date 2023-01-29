@@ -1,5 +1,4 @@
-const express = require("express");
-const bcyrpt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const Class = require("../models/class");
@@ -14,8 +13,8 @@ exports.register = async (req, res) => {
       .json({ error: true, message: "Username is already registered" });
   }
 
-  const salt = await bcyrpt.genSalt(10);
-  const hashedPassword = await bcyrpt.hash(req.body.password, salt);
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
   const user = await User.create({
     username: req.body.username,
@@ -41,7 +40,7 @@ exports.login = async (req, res) => {
       .json({ error: true, message: "Wrong username or password" });
   }
 
-  const validPassword = await bcyrpt.compare(req.body.password, user.password);
+  const validPassword = await bcrypt.compare(req.body.password, user.password);
 
   if (!validPassword) {
     return res
@@ -80,8 +79,8 @@ exports.updateUser = async (req, res) => {
       username: req.body.username,
     }).catch((err) => console.error(err));
   } else if (req.body.password) {
-    const salt = await bcyrpt.genSalt(10);
-    const hashedPassword = await bcyrpt.hash(req.body.password, salt);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
     await User.findByIdAndUpdate(req.params.id, {
       password: hashedPassword,
     }).catch((err) => console.error(err));
@@ -166,7 +165,7 @@ exports.dropClass = async (req, res) => {
   let classVar;
 
   if (req.params.classId.match(/^[0-9a-fA-F]{24}$/)) {
-    classVar = await Class.findOne({_id: req.params.classId});
+    classVar = await Class.findOne({ _id: req.params.classId });
   } else {
     return res
       .status(404)
