@@ -10,7 +10,7 @@ type Admin struct {
 }
 
 type Users struct {
-	gorm.Model
+	ID uint `gorm:"type:bigint(20);primaryKey" json:"id"`
 	Nim string `gorm:"type:varchar(50);unique" json:"nim"`
 	Email string `gorm:"type:varchar(50);unique" json:"email"`
 	Username string `gorm:"type:varchar(255);unique" json:"username"`
@@ -19,7 +19,7 @@ type Users struct {
 }
 
 type Courses struct {
-	gorm.Model
+	ID uint `gorm:"type:bigint(20);primaryKey" json:"id"`
 	Title string `gorm:"type:varchar(255);unique" json:"title"`
 	Course_code string `gorm:"type:varchar(255);unique" json:"course_code"`
 	Sks int `gorm:"type:int" json:"sks"`
@@ -27,8 +27,8 @@ type Courses struct {
 
 
 type Class struct {
-	gorm.Model
-	Name string `gorm:"type:varchar(255);unique" json:"name"`
+	ID uint `gorm:"type:bigint(20);primaryKey" json:"id"`
+	Name string `gorm:"type:varchar(255)" json:"name"`
 	Class_code string `gorm:"type:varchar(255);unique" json:"class_code"`
 	Location string `gorm:"type:varchar(255)" json:"location"`
 	CourseID uint

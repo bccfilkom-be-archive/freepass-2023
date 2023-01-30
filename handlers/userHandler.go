@@ -44,7 +44,7 @@ func UserSignup(c *gin.Context) {
 	}
 	result := initializers.DB.Create(&user)
 	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
 			"message": "Failed to create user",
 			"error":   result.Error,
@@ -72,19 +72,22 @@ func UsersLogin(c *gin.Context){
 		return
 	}
 	var user models.Users
-	initializers.DB.First(&user, "nim=?",body.Nim)
-
-	if user.ID==0{
-		c.JSON(http.StatusBadRequest, gin.H{
+	if err:=initializers.DB.First(&user, "nim=?",body.Nim).Error;err!=nil{
+		message:="Failed to querying user data"
+		if user.ID==0{
+			message="Invalid NIM or password"
+		}
+		c.JSON(http.StatusNotFound, gin.H{
 			"success": false,
-			"message": "Invalid email or password",
+			"message": message,
+			"error": err,
 		})
 		return
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password),[]byte(body.Password)); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Invalid email or password",
+			"message": "Invalid NIM or password",
 		})
 		return
 	}
@@ -125,7 +128,7 @@ func GetUserProfile(c *gin.Context){
 	}
 	var user []models.Users
 	if err := initializers.DB.Select("id","nim","username", "email", "sks").First(&user, "id = ?", userId).Error; err != nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusNotFound,gin.H{
 			"success": false,
 			"message": "Failed to querying user data",
 			"error":err.Error(),
@@ -159,7 +162,7 @@ func UpdateProfile(c *gin.Context){
 	}
 	var user models.Users
 	if err := initializers.DB.First(&user,userId).Error;err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusNotFound,gin.H{
 			"success": false,
 			"message": "Failed to querying user data",
 			"error":err.Error(),
@@ -180,9 +183,9 @@ func UpdateProfile(c *gin.Context){
 	user.Username=body.Username
 	user.Password=string(hash)
 	if err:=initializers.DB.Save(&user).Error;err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusInternalServerError,gin.H{
 			"success": false,
-			"message": "Error when updating the database.",
+			"message": "Error when updating the user data",
 			"error":err.Error(),
 		})
 		return
@@ -213,7 +216,7 @@ func GetAllClasses(c *gin.Context){
 	}
 	idClass,err := GetUserIdClass(userId)
 	if err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusNotFound,gin.H{
 			"success": false,
 			"message": "Failed to querying user's class data",
 			"error":err.Error(),
@@ -222,7 +225,7 @@ func GetAllClasses(c *gin.Context){
 	}
 	var classes []models.Class
 	if err:=initializers.DB.Not(idClass).Joins("Course").Find(&classes).Error;err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusNotFound,gin.H{
 			"success": false,
 			"message": "Failed to querying class data",
 			"error":err.Error(),
@@ -249,7 +252,7 @@ func SearchClass(c *gin.Context){
 	courseCode:= c.Query("course_code")
 	idClass,err := GetUserIdClass(userId)
 	if err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusNotFound,gin.H{
 			"success": false,
 			"message": "Failed to querying user's class data",
 			"error":err.Error(),
@@ -258,7 +261,7 @@ func SearchClass(c *gin.Context){
 	}
 	var classes []models.Class
 	if err:=initializers.DB.Not(idClass).Joins("Course").Where("course_code = ?", courseCode).Find(&classes).Error;err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusNotFound,gin.H{
 			"success": false,
 			"message": "Failed to querying class data",
 			"error":err.Error(),
@@ -295,7 +298,7 @@ func AddClass(c *gin.Context){
 	}
 	var userClass []models.UserClass
 	if err:=initializers.DB.Joins("Class").Find(&userClass, "user_id = ?", userId).Error;err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusNotFound,gin.H{
 			"success": false,
 			"message": "Failed to querying user's class data",
 			"error":err.Error(),
@@ -304,9 +307,9 @@ func AddClass(c *gin.Context){
 	}
 	var class models.Class
 	if err:=initializers.DB.Joins("Course").Where("classes.id = ?", body.ClassID).First(&class).Error;err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusNotFound,gin.H{
 			"success": false,
-			"message": "Failed to querying class",
+			"message": "Failed to querying class data",
 			"error":err.Error(),
 		})
 		return
@@ -321,18 +324,18 @@ func AddClass(c *gin.Context){
 			return
 		}
 	}
-	addClass := models.UserClass{
-		UserID: userClass[0].UserID,
-		ClassID: uint(body.ClassID),
-	}
 	var user models.Users
 	if err:= initializers.DB.First(&user,userId).Error;err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusNotFound,gin.H{
 			"success": false,
 			"message": "Failed to querying user data",
 			"error":err.Error(),
 		})
 		return
+	}
+	addClass := models.UserClass{
+		UserID: user.ID,
+		ClassID: uint(body.ClassID),
 	}
 	if user.Sks+class.Course.Sks>24{
 		c.JSON(http.StatusBadRequest,gin.H{
@@ -344,15 +347,15 @@ func AddClass(c *gin.Context){
 	}
 	user.Sks=user.Sks+class.Course.Sks
 	if err:=initializers.DB.Save(&user).Error;err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusInternalServerError,gin.H{
 			"success": false,
-			"message": "Error when updating the database.",
+			"message": "Error when updating user data",
 			"error":err.Error(),
 		})
 		return
 	}
 	if err:=initializers.DB.Create(&addClass).Error;err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
 			"message": "Failed to add class",
 			"error":   err.Error(),
@@ -386,9 +389,9 @@ func GetUserClasses(c *gin.Context){
 	}
 	var class []models.Class
 	if err:=initializers.DB.Joins("Course").Where(map[string]interface{}{"classes.id": idClass}).Find(&class).Error;err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusNotFound,gin.H{
 			"success": false,
-			"message": "Failed to querying user's class data",
+			"message": "Failed to querying class data",
 			"error":err.Error(),
 		})
 		return
@@ -413,17 +416,25 @@ func DeleteUserClass(c *gin.Context){
 	idString:= c.Param("id")
 	classId,_:= strconv.Atoi(idString)
 	var userClass models.UserClass
-	if err:=initializers.DB.Where("user_id = ? AND class_id = ?", userId, classId).Delete(&userClass).Error;err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+	if err:=initializers.DB.Where("user_id = ? AND class_id = ?", userId, classId).First(&userClass).Error;err!=nil{
+		c.JSON(http.StatusNotFound,gin.H{
 			"success": false,
-			"message": "Failed to delete data",
+			"message": "Failed to querying user's class data",
+			"error":err.Error(),
+		})
+		return
+	}
+	if err:=initializers.DB.Where("user_id = ? AND class_id = ?", userId, classId).Delete(&userClass).Error;err!=nil{
+		c.JSON(http.StatusInternalServerError,gin.H{
+			"success": false,
+			"message": "Failed to delete user's class data",
 			"error":err.Error(),
 		})
 		return
 	}
 	var user models.Users
 	if err:= initializers.DB.First(&user,userId).Error;err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusNotFound,gin.H{
 			"success": false,
 			"message": "Failed to querying user data",
 			"error":err.Error(),
@@ -432,7 +443,7 @@ func DeleteUserClass(c *gin.Context){
 	}
 	var class models.Class
 	if err:= initializers.DB.Joins("Course").First(&class,classId).Error;err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusNotFound,gin.H{
 			"success": false,
 			"message": "Failed to querying class data",
 			"error":err.Error(),
@@ -441,9 +452,9 @@ func DeleteUserClass(c *gin.Context){
 	}
 	user.Sks=user.Sks-class.Course.Sks
 	if err:=initializers.DB.Save(&user).Error;err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusInternalServerError,gin.H{
 			"success": false,
-			"message": "Error when updating the database.",
+			"message": "Error when updating user data",
 			"error":err.Error(),
 		})
 		return
@@ -455,13 +466,21 @@ func DeleteUserClass(c *gin.Context){
 	})
 }
 
-func GetClassParticipants(c *gin.Context){
-	classId:= c.Query("class_id")
-	var userClass []models.UserClass
-	if err:=initializers.DB.Select("id","nim","username","email").Joins("User").Find(&userClass,"class_id = ?", classId).Error;err!=nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+func GetUserClassParticipants(c *gin.Context){
+	classId:= c.Query("id")
+	userId,idError:=c.Get("user")
+	if !idError {
+		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Failed to querying user data",
+			"message": "ID is not supplied.",
+		})
+		return
+	}
+	var userClass []models.UserClass
+	if err:=initializers.DB.Select("id","nim","username","email").Joins("User").Find(&userClass,"user_id = ? AND class_id = ?",userId, classId).Error;err!=nil{
+		c.JSON(http.StatusNotFound,gin.H{
+			"success": false,
+			"message": "Failed to querying user's class data",
 			"error":err.Error(),
 		})
 		return
