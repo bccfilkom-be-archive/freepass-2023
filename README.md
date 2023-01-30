@@ -2,7 +2,7 @@
 
 In this digital age, transparency and management of information is greatly needed, especially in the field of education. At some point, there is an investor who establishes a university, while the university requires a system for managing information from its students.
 
-This application is intended for university students to be able to access information provided by the university. To accomplish this quickly, BCC will need help. By this letter, we humbly invite you to join us on this journey to figure out the best solution. We cannot wait to see your ideas to overcome this problem.
+This application is intended for university students to be able to access information provided by the university. Developed in Golang gin backend framework and uses Mongodb as the database management service, mapped using mongo go models (mgm)
 
 ## Setup API Service and Container Image
 ```
