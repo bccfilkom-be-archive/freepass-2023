@@ -3,10 +3,27 @@ const Class = require("../models/class");
 const Course = require("../models/course");
 
 exports.getClass = async (req, res) => {
-  const classes = await Class.find({})
+  let classes = await Class.find({})
     .sort({ _course: 1, name: 1 })
     .select("-_student")
     .populate("_course", "name sks -_id");
+
+  if (req.query.courseId) {
+    if (req.query.courseId.match(/^[0-9a-fA-F]{24}$/)) {
+      classes = await Class.find({ _course: req.query.courseId })
+        .sort({ _course: 1, name: 1 })
+        .select("-_student")
+        .populate("_course", "name sks -_id");
+    } else {
+      return res
+        .status(404)
+        .json({ error: true, message: "Class is Not Found" });
+    }
+  }
+
+  if (!classes) {
+    return res.status(404).json({ error: true, message: "Class is Not Found" });
+  }
 
   try {
     res.status(200).json(classes);
@@ -24,17 +41,25 @@ exports.addClass = async (req, res) => {
       .json({ error: true, message: "Class is already created" });
   }
 
-  const classVar = await Class.create({
-    name: req.body.name,
-    _course: req.body.courseId,
-  });
+  let classVar;
+
+  if (req.body.courseId.match(/^[0-9a-fA-F]{24}$/)) {
+    classVar = await Class.create({
+      name: req.body.name,
+      _course: req.body.courseId,
+    });
+  } else {
+    return res
+      .status(404)
+      .json({ error: true, message: "Course is Not Found" });
+  }
 
   try {
     await classVar.save();
     await Course.findByIdAndUpdate(classVar._course, {
       $addToSet: { _class: classVar._id },
     });
-    res.status(201).json(classVar);
+    res.status(201).json({identityNumber: classVar._id});
   } catch (error) {
     res.status(400).json({ error: true, message: error });
   }
@@ -57,10 +82,15 @@ exports.updateClass = async (req, res) => {
     await Class.findByIdAndUpdate(req.params.classId, {
       name: req.body.name,
     });
-    res.status(200).json({ message: "successfully edited" });
+  } else if (req.body.courseId) {
+    await Class.findByIdAndUpdate(req.params.classId, {
+      _course: req.body.courseId,
+    });
   } else {
     res.status(400).json({ error: true, message: "Nothing changed" });
   }
+
+  res.status(200).json({ message: "successfully edited" });
 };
 
 exports.deleteClass = async (req, res) => {
@@ -100,6 +130,7 @@ exports.deleteClass = async (req, res) => {
 
 exports.addNewUser = async (req, res) => {
   let classFound;
+  let userFound;
 
   if (req.params.classId.match(/^[0-9a-fA-F]{24}$/)) {
     classFound = await Class.findById(req.params.classId);
@@ -109,6 +140,16 @@ exports.addNewUser = async (req, res) => {
 
   if (!classFound) {
     return res.status(404).json({ error: true, message: "Class is not found" });
+  }
+
+  if (req.body.userId.match(/^[0-9a-fA-F]{24}$/)) {
+    userFound = await User.findById(req.body.userId);
+  } else {
+    return res.status(404).json({ error: true, message: "User is not found" });
+  }
+
+  if (!userFound) {
+    return res.status(404).json({ error: true, message: "User is not found" });
   }
 
   try {
@@ -135,6 +176,29 @@ exports.addNewUser = async (req, res) => {
 };
 
 exports.deleteUser = async (req, res) => {
+  let classFound;
+  let userFound;
+
+  if (req.params.classId.match(/^[0-9a-fA-F]{24}$/)) {
+    classFound = await Class.findById(req.params.classId);
+  } else {
+    return res.status(404).json({ error: true, message: "Class is not found" });
+  }
+
+  if (!classFound) {
+    return res.status(404).json({ error: true, message: "Class is not found" });
+  }
+
+  if (req.params.studentId.match(/^[0-9a-fA-F]{24}$/)) {
+    userFound = await User.findById(req.params.studentId);
+  } else {
+    return res.status(404).json({ error: true, message: "User is not found" });
+  }
+
+  if (!userFound) {
+    return res.status(404).json({ error: true, message: "User is not found" });
+  }
+
   try {
     await User.findByIdAndUpdate(req.params.studentId, {
       $pull: { _class: req.body.classId },

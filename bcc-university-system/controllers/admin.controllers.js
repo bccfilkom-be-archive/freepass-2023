@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const Admin = require("../models/admin");
 
 exports.register = async (req, res) => {
-    const registeredAdmin = Admin.findOne({ username: req.body.username });
+    const registeredAdmin = await Admin.findOne({ username: req.body.username });
 
     if (registeredAdmin) {
       return res

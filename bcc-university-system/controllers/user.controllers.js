@@ -138,6 +138,13 @@ exports.addClassByUser = async (req, res) => {
       .json({ error: true, message: "Class does not exist" });
   }
 
+  // const user = await User.findById(req.params.id);
+  // const checkCourse = await Course.find({
+  //   _class: { $in: user._class },
+  // });
+
+  // console.log(checkCourse);
+
   try {
     await User.updateOne(
       { _id: req.params.id },
