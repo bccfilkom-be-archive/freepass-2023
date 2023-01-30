@@ -4,9 +4,11 @@ const isAdmin = require("../middleware/admin-auth.middleware");
 
 const router = express.Router();
 
+router.get("/", classController.getClass);
+
 router.use(isAdmin);
 
-router.route("/").get(classController.getClass).post(classController.addClass);
+router.post("/",classController.addClass);
 
 router
   .route("/:classId")
