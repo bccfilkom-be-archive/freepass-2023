@@ -160,7 +160,7 @@ Also, please check out how APIs work in this project with API Documentation in t
 
 ## :clipboard: API Documentation
 
-> [API Documentation - 215150701111025](https://documenter.getpostman.com/view/25559847/2s935itRdd)
+[API Documentation - 215150701111025](https://documenter.getpostman.com/view/25559847/2s935itRdd)
 
 ## :gift: Submission
 
