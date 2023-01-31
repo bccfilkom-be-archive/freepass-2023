@@ -90,7 +90,7 @@ func RegisterClass(ctx *gin.Context) {
 		}
 
 		if helpers.IsValueTooLong(err) {
-			err = errors.New("class code should only contain 1 character")
+			err = errors.New("class code should only contain 10 character")
 			ctx.JSON(http.StatusBadRequest, helpers.ErrorResponse(err))
 			return
 		}
