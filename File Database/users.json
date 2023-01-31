@@ -1,0 +1,17 @@
+[{
+  "nip": 1093714,
+  "nama": "lampard",
+  "password": "$2b$10$qYGGSmaeboggnSvngO21q.02jh5E6GzW1W2/ecoDIPFVDVEOS6R7y",
+  "email": "hasasd@gmail.com",
+  "phone": 981322713,
+  "jumlahSKS": 3,
+  "matkul": []
+},{
+  "nip": 1093714324,
+  "nama": "Darwin Nunez",
+  "password": "$2b$10$XX.Dmzvsn1XfxsWdhXIzHerrmEUfGcQqmDeo2tZRKbctQQCsRPJo.",
+  "email": null,
+  "phone": null,
+  "jumlahSKS": 0,
+  "matkul": []
+}]
