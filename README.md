@@ -150,11 +150,13 @@ The implementation of this project MUST be in the form of a REST, gRPC, or Graph
 
 #### **Note**
 
-If you don't have MongoDB and its dependency on your machine, you can copy the URL link below and replace `MONGO_URI` field value inside `.env` file. It will connect to MongoDB Atlas (Cloud Database), beware its connection is quite unstable so make sure to restart the server if there is a connection problem.
+If you don't have MongoDB and its dependency on your machine, you can copy the URL link below and replace `MONGO_URI` field value inside `.env` file. 
 
 ```
 mongodb+srv://application:rahasia123@cluster0.rxmmds3.mongodb.net/bcc-university-system?retryWrites=true&w=majority
 ```
+
+It will connect to MongoDB Atlas (Cloud Database), beware its connection is quite unstable so make sure to restart the server if there is a connection problem.
 
 Also, please check out how APIs work in this project with API Documentation in the section below.
 
