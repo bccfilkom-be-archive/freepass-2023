@@ -17,7 +17,7 @@ exports.getClass = async (req, res) => {
     } else {
       return res
         .status(404)
-        .json({ error: true, message: "Class is Not Found" });
+        .json({ error: true, message: "Course is Not Found" });
     }
   }
 
