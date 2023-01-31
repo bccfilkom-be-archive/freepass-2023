@@ -59,7 +59,7 @@ exports.addClass = async (req, res) => {
     await Course.findByIdAndUpdate(classVar._course, {
       $addToSet: { _class: classVar._id },
     });
-    res.status(201).json({identityNumber: classVar._id});
+    res.status(201).json({ identityNumber: classVar._id });
   } catch (error) {
     res.status(400).json({ error: true, message: error });
   }

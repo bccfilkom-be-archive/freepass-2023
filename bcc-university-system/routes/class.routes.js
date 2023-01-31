@@ -8,7 +8,7 @@ router.get("/", classController.getClass);
 
 router.use(isAdmin);
 
-router.post("/",classController.addClass);
+router.post("/", classController.addClass);
 
 router
   .route("/:classId")

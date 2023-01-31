@@ -12,7 +12,7 @@ const userSchema = mongoose.Schema({
   },
   fullName: String,
   semester: Number,
-  _class: [{ type: mongoose.Schema.Types.ObjectId, ref: "Class"}],
+  _class: [{ type: mongoose.Schema.Types.ObjectId, ref: "Class" }],
 });
 
 const User = mongoose.model("User", userSchema);

@@ -3,13 +3,13 @@ const jwt = require("jsonwebtoken");
 const Admin = require("../models/admin");
 
 exports.register = async (req, res) => {
-    const registeredAdmin = await Admin.findOne({ username: req.body.username });
+  const registeredAdmin = await Admin.findOne({ username: req.body.username });
 
-    if (registeredAdmin) {
-      return res
-        .status(400)
-        .json({ error: true, message: "Username is already registered" });
-    }
+  if (registeredAdmin) {
+    return res
+      .status(400)
+      .json({ error: true, message: "Username is already registered" });
+  }
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(req.body.password, salt);

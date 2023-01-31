@@ -156,9 +156,9 @@ If you don't have MongoDB and its dependency on your machine, you can copy the U
 mongodb+srv://application:rahasia123@cluster0.rxmmds3.mongodb.net/bcc-university-system?retryWrites=true&w=majority
 ```
 
-It will connect to MongoDB Atlas (Cloud Database), beware its connection is quite unstable so make sure to restart the server if there is a connection problem.
+It will connect to MongoDB Atlas (Cloud Database), beware its connection is quite unstable so make sure to restart the server if there is a connection error.
 
-Also, please check out how APIs work in this project with API Documentation in the section below.
+Also, please check out how APIs work (Service Implementation included) in this project with API Documentation in the section below.
 
 ## :clipboard: API Documentation
 
