@@ -127,7 +127,17 @@ The implementation of this project MUST be in the form of a REST, gRPC, or Graph
 4. Write the installation guide of your backend service in the section below
 
 ## :test_tube: API Installation
-> Write how to run your service in local or development environment here. If you use Docker to serve your DBMS or your server, you will receive bonus points for your submission.
+This API is made using laravel framework. To use this API you need this laravel program running on your local service.
+
+Follow these steps to run laravel program
+1. Clone this repository
+2. Run composer install to install the required PHP dependencies
+3. Copy the .env.example file to .env and edit the database credentials according to your database server
+4. Run php artisan key:generate to generate a new application key
+5. Run php artisan migrate --seed to create the database tables and seed with some data.
+6. Run php artisan serve to start the development server and get your base url
+
+Then you can already use this API. Read the documentation for using this API at the following link : https://documenter.getpostman.com/view/25516509/2s935itmRJ
 
 ## :gift: Submission
 
