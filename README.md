@@ -127,7 +127,12 @@ The implementation of this project MUST be in the form of a REST, gRPC, or Graph
 4. Write the installation guide of your backend service in the section below
 
 ## :test_tube: API Installation
-> Write how to run your service in local or development environment here. If you use Docker to serve your DBMS or your server, you will receive bonus points for your submission.
+1. Use Go version 1.19 or above
+2. Make sure you have created an empty database
+3. Rename .env.example to .env and fill the necessary fields
+4. go run main.go
+
+https://documenter.getpostman.com/view/22317100/2s935iuSTa
 
 ## :gift: Submission
 
