@@ -129,6 +129,35 @@ The implementation of this project MUST be in the form of a REST, gRPC, or Graph
 ## :test_tube: API Installation
 > Write how to run your service in local or development environment here. If you use Docker to serve your DBMS or your server, you will receive bonus points for your submission.
 
+### **Prerequisite**
+
+1. Node.js 16.0+
+
+#### **Optional**
+
+1. MongoDB Community Server
+2. MongoDB Compass
+
+### **Installation Guide**
+
+1. Clone this repository
+2. Change directory to project folder `bcc-university-system` 
+3. Rename file `sample.env` to `.env`
+4. Open a terminal in the project folder and type `npm install` to install the required modules
+5. Run MongoDB server through MongoDB Compass or MongoDB Shell `mongosh`
+6. Run server.js with command `npm start`
+7. Test APIs using API Platform software e.g. Postman
+
+#### **Note**
+
+If you don't have MongoDB and its dependency on your machine, you can copy the URL link below and replace `MONGO_URI` field value inside `.env` file. It will connect to MongoDB Atlas (Cloud Database), beware its connection is quite unstable so make sure to restart the server if there is a connection problem.
+
+```
+mongodb+srv://application:rahasia123@cluster0.rxmmds3.mongodb.net/bcc-university-system?retryWrites=true&w=majority
+```
+
+Also, please check out how APIs work in this project with API Documentation in the section below. 
+
 ## :gift: Submission
 
 Please follow the instructions on the [Contributing guide](CONTRIBUTING.md).
