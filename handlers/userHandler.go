@@ -5,7 +5,6 @@ import (
 	"course-management/models"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
@@ -413,8 +412,18 @@ func DeleteUserClass(c *gin.Context){
 		})
 		return
 	}
-	idString:= c.Param("id")
-	classId,_:= strconv.Atoi(idString)
+	var body struct{
+		ClassID int `json:"id" binding:"required"`
+	}
+	if err:= c.ShouldBindJSON(&body);err != nil{
+		c.JSON(http.StatusBadRequest,gin.H{
+			"success": false,
+			"message": "Failed to read body",
+			"error":   err.Error(),
+		})
+		return
+	}
+	classId:= body.ClassID
 	var userClass models.UserClass
 	if err:=initializers.DB.Where("user_id = ? AND class_id = ?", userId, classId).First(&userClass).Error;err!=nil{
 		c.JSON(http.StatusNotFound,gin.H{

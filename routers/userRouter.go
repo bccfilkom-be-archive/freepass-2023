@@ -16,9 +16,10 @@ func UserRouter(router *gin.Engine) *gin.RouterGroup{
 		userGroup.GET("", middleware.UserRole, middleware.RequireAuth, handlers.GetAllClasses)
 		userGroup.GET("/search", middleware.UserRole, middleware.RequireAuth, handlers.SearchClass)
 		userGroup.POST("", middleware.UserRole, middleware.RequireAuth, handlers.AddClass)
+		userGroup.POST("/search", middleware.UserRole, middleware.RequireAuth, handlers.AddClass)
 		userGroup.GET("/class", middleware.UserRole, middleware.RequireAuth, handlers.GetUserClasses)
 		userGroup.GET("/class/participants", middleware.UserRole, middleware.RequireAuth, handlers.GetUserClassParticipants)
-		userGroup.DELETE("class/:id",middleware.UserRole, middleware.RequireAuth, handlers.DeleteUserClass)
+		userGroup.DELETE("class",middleware.UserRole, middleware.RequireAuth, handlers.DeleteUserClass)
 	}
 	return userGroup
 }
