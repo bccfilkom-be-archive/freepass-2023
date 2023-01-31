@@ -127,7 +127,7 @@ The implementation of this project MUST be in the form of a REST, gRPC, or Graph
 4. Write the installation guide of your backend service in the section below
 
 ## :test_tube: API Installation
-> Write how to run your service in local or development environment here. If you use Docker to serve your DBMS or your server, you will receive bonus points for your submission.
+
 
 ### **Prerequisite**
 
@@ -156,7 +156,11 @@ If you don't have MongoDB and its dependency on your machine, you can copy the U
 mongodb+srv://application:rahasia123@cluster0.rxmmds3.mongodb.net/bcc-university-system?retryWrites=true&w=majority
 ```
 
-Also, please check out how APIs work in this project with API Documentation in the section below. 
+Also, please check out how APIs work in this project with API Documentation in the section below.
+
+## :clipboard: API Documentation
+
+> [API Documentation - 215150701111025](https://documenter.getpostman.com/view/25559847/2s935itRdd)
 
 ## :gift: Submission
 
