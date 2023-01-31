@@ -150,7 +150,7 @@ The implementation of this project MUST be in the form of a REST, gRPC, or Graph
 
 #### **Note**
 
-If you don't have MongoDB and its dependency on your machine, you can copy the URL link below and replace `MONGO_URI` field value inside `.env` file. 
+If you don't have MongoDB and its dependency on your local machine, you can copy the URL link below and replace `MONGO_URI` field value inside `.env` file. 
 
 ```
 mongodb+srv://application:rahasia123@cluster0.rxmmds3.mongodb.net/bcc-university-system?retryWrites=true&w=majority
