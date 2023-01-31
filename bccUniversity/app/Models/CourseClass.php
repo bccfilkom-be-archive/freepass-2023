@@ -21,4 +21,6 @@ class CourseClass extends Model
         'name',
         'course_id',
     ];
+
+    public $timestamps = false;
 }

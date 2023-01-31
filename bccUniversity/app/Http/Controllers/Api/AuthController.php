@@ -11,25 +11,47 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    // public function register(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'name' => 'required|string',
+    //         'email' => 'required|email',
+    //         'password' => 'required|string'
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'message' => $validator->errors()
+    //         ], 401);
+    //     }
+
+    //     $user = new User;
+    //     $user->name = $request->name;
+    //     $user->email = $request->email;
+    //     $user->password = Hash::make($request->password);
+    //     $user->role = 'user';
+    //     $user->save();
+
+    //     return response()->json([
+    //         'message' => 'Registration Succesed!',
+    //         'name' => $request->name,
+    //         'email' => $request->email
+    //     ]);
+    // }
+
     public function register(Request $request)
-    {   
+    {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|email',
-            'password' => 'required|string'
+            'name' => 'string|required',
+            'email' => 'email|required',
+            'password' => 'string|required'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => $validator->errors()
-            ]);
+            ], 401);
         }
-
-        // $user = User::create([
-        //     'name' => $request->name,
-        //     'email' => $request->email,
-        //     'password' => Hash::make($request->password)
-        // ]);
 
         $user = new User;
         $user->name = $request->name;
@@ -37,40 +59,12 @@ class AuthController extends Controller
         $user->password = Hash::make($request->password);
         $user->role = 'user';
         $user->save();
-        // $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Registration Succesed!',
             'name' => $request->name,
             'email' => $request->email
-            // 'token' => $token
-        ]);
-        // $validator = Validator::make($request, [
-        //     'name' => 'required|string',
-        //     'email' => 'required|email|unique',
-        //     'password' => 'required|string'
-        // ]);
-
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //         'message' => $validator->errors()
-        //     ]);
-        // }
-
-        // $user = User::create([
-        //     'name' => $request->name,
-        //     'email' => $request->email,
-        //     'password' => Hash::make($request->password)
-        // ]);
-
-        // // $token = $user->createToken('auth_token')->plainTextToken;
-
-        // return response()->json([
-        //     'message' => 'Registration Succesed!',
-        //     'name' => $request->name,
-        //     'email' => $request->email
-        //     // 'token' => $token
-        // ]);
+        ], 201);
     }
 
     public function login(Request $request)
@@ -93,7 +87,8 @@ class AuthController extends Controller
 
     public function logout()
     {
-        Auth::user()->tokens()->delete();
+        $user = User::find(Auth::user()->id);
+        $user->tokens()->delete();
         return response()->json([
             'message' => 'Logout Succesed!'
         ], 200);

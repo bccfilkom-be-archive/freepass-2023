@@ -1,8 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\TestController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\CourseClassController;
+use App\Http\Controllers\UserClassController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,9 +18,34 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::post('register', [AuthController::class, 'register'])->name('register');
-Route::post('login', [AuthController::class, 'login'])->name('login');
-Route::middleware('auth:sanctum')->get('logout', [AuthController::class, 'logout']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+// Route::middleware('auth:sanctum')->get('logout', [AuthController::class, 'logout']);
 
-Route::middleware('auth:sanctum')->apiResource('/test', TestController::class);
-// Route::apiResource('/test', TestController::class);
+// Route::middleware('auth:sanctum')->get('/account', [UserController::class, 'index']);
+// Route::middleware('auth:sanctum')->post('/account', [UserController::class, 'store']);
+
+// Route::middleware('auth:sanctum')->get('/course-class', [CourseClassController::class, 'index']);
+// Route::middleware('auth:sanctum')->post('/course-class', [CourseClassController::class, 'store']);
+// Route::middleware('auth:sanctum')->post('/course-class/{id}', [CourseClassController::class, 'update']);
+// Route::middleware('auth:sanctum')->delete('/course-class/{id}', [CourseClassController::class, 'destroy']);
+
+// Route::middleware('auth:sanctum')->get('/user-class', [UserClassController::class, 'index']);
+// Route::middleware('auth:sanctum')->post('/user-class', [UserClassController::class, 'store']);
+// Route::middleware('auth:sanctum')->delete('/user-class/{id}', [UserClassController::class, 'destroy']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('logout', [AuthController::class, 'logout']);
+
+    Route::get('/account', [UserController::class, 'index']);
+    Route::post('/account', [UserController::class, 'store']);
+
+    Route::get('/course-classes', [CourseClassController::class, 'index']);
+    Route::post('/course-classes', [CourseClassController::class, 'store']);
+    Route::post('/course-classes/{id}', [CourseClassController::class, 'update']);
+    Route::delete('/course-classes/{id}', [CourseClassController::class, 'destroy']);
+
+    Route::get('/user-classes', [UserClassController::class, 'index']);
+    Route::post('/user-classes', [UserClassController::class, 'store']);
+    Route::delete('/user-classes/{id}', [UserClassController::class, 'destroy']);
+});

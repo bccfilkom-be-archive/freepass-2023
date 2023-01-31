@@ -17,13 +17,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-
         DB::table('users')->insert([
             'name' => 'admin',
             'email' => 'admin@gmail.com',
@@ -112,33 +105,53 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('user_classes')->insert([
-            'user_id' => 1,
+            'user_id' => 2,
             'course_class_id' => 1,
         ]);
 
         DB::table('user_classes')->insert([
             'user_id' => 2,
-            'course_class_id' => 1,
+            'course_class_id' => 3,
         ]);
         
         DB::table('user_classes')->insert([
             'user_id' => 3,
-            'course_class_id' => 1,
-        ]);
-
-        DB::table('user_classes')->insert([
-            'user_id' => 1,
-            'course_class_id' => 2,
-        ]);
-
-        DB::table('user_classes')->insert([
-            'user_id' => 2,
             'course_class_id' => 2,
         ]);
 
         DB::table('user_classes')->insert([
             'user_id' => 3,
+            'course_class_id' => 3,
+        ]);
+
+        DB::table('user_classes')->insert([
+            'user_id' => 4,
+            'course_class_id' => 1,
+        ]);
+
+        DB::table('user_classes')->insert([
+            'user_id' => 4,
+            'course_class_id' => 3,
+        ]);
+        
+        DB::table('user_classes')->insert([
+            'user_id' => 5,
             'course_class_id' => 2,
+        ]);
+
+        DB::table('user_classes')->insert([
+            'user_id' => 5,
+            'course_class_id' => 3,
+        ]);
+
+        DB::table('user_classes')->insert([
+            'user_id' => 6,
+            'course_class_id' => 1,
+        ]);
+
+        DB::table('user_classes')->insert([
+            'user_id' => 6,
+            'course_class_id' => 3,
         ]);
 
         
