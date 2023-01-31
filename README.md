@@ -1,10 +1,12 @@
 # BCC University
 
-### ⚠️⚠️⚠️
-```
+## ⚠️⚠️⚠️
+
+```text
 Submissions from 2022 students will have much higher priority than submissions from 2021, SAP, or higher students.
 Please take note of this before planning to attempt this freepass challenge.
 ```
+
 ## :love_letter: Invitation Letter
 
 In this digital age, transparency and management of information is greatly needed, especially in the field of education. At some point, there is an investor who establishes a university, while the university requires a system for managing information from its students.
@@ -87,7 +89,7 @@ THEN => System will show all classes
 
 ## :family: Entities and Actors
 
-We want to see your perspective about these problems. You can define various types of entities or actors. One thing for sure, there is no true or false statement to define the entities. As long as the results are understandable, then go for it! :rocket:
+![Database Entities](./assets/Screenshot%20from%202023-01-31%2016-50-58.png)
 
 ## :blue_book: References
 
@@ -118,16 +120,40 @@ You might be overwhelmed by these requirements. Don't worry, here's a list of so
 You are welcome to use any libraries or frameworks, but we appreciate if you use the popular ones.
 
 ## :school_satchel: Tasks
-```
+
+```text
 The implementation of this project MUST be in the form of a REST, gRPC, or GraphQL API (choose AT LEAST one type).
 ```
+
 1. Fork this repository
 2. Follow the project convention
 3. Finish all service implementations
 4. Write the installation guide of your backend service in the section below
 
 ## :test_tube: API Installation
-> Write how to run your service in local or development environment here. If you use Docker to serve your DBMS or your server, you will receive bonus points for your submission.
+
+### Requirement
+
+* [go](https://go.dev/) version 1.19 or later
+* [podman](https://podman.io/) or [docker](https://www.docker.com/)
+* [docker-compose](https://github.com/docker/compose/) (if using podman)
+* [PostgreSQL Container Image](https://hub.docker.com/_/postgres/)
+
+Run using docker:
+
+```bash
+docker compose up -d
+```
+
+or using podman with docker-compose:
+
+```bash
+docker-compose up -d
+```
+
+### API Documentation
+
+`TODO`
 
 ## :gift: Submission
 
