@@ -128,9 +128,10 @@ The implementation of this project MUST be in the form of a REST, gRPC, or Graph
 
 ## :test_tube: API Installation
 1. Use Go version 1.19 or above
-2. Make sure you have created an empty database
+2. Make sure you have created an empty mysql database
 3. Rename .env.example to .env and fill the necessary fields
 4. go run main.go
+5. Read the documentation
 
 https://documenter.getpostman.com/view/22317100/2s935iuSTa
 
