@@ -16,7 +16,7 @@ func User(db *gorm.DB, q *gin.Engine) {
 	r.GET("/profile", Middleware.Authorization(), func(c *gin.Context) {
 		ID, _ := c.Get("id")
 
-		var user Model.Student
+		var user Model.User
 		if err := db.Where("id = ?", ID).Take(&user); err.Error != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
@@ -26,7 +26,7 @@ func User(db *gorm.DB, q *gin.Engine) {
 			return
 		}
 
-		if user.ID != 0 && user.ID != 1 {
+		if user.Role != 0 && user.Role != 1 {
 			c.JSON(http.StatusForbidden, gin.H{
 				"success": false,
 				"message": "You are not an admin or a student",
@@ -43,7 +43,7 @@ func User(db *gorm.DB, q *gin.Engine) {
 	r.POST("/profile", Middleware.Authorization(), func(c *gin.Context) {
 		ID, _ := c.Get("id")
 
-		var user Model.Student
+		var user Model.User
 		if err := db.Where("id = ?", ID).Take(&user); err.Error != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
@@ -51,6 +51,13 @@ func User(db *gorm.DB, q *gin.Engine) {
 				"error":   err.Error.Error(),
 			})
 			return
+		}
+
+		if user.Role != 0 && user.Role != 1 {
+			c.JSON(http.StatusForbidden, gin.H{
+				"success": false,
+				"message": "You are not an admin or a student",
+			})
 		}
 
 		type inputEditUser struct {
