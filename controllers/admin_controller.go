@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"bcc_university/models"
+	"bcc_university/utils"
 	"net/http"
 	"strconv"
 
@@ -9,10 +10,6 @@ import (
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
-
-func Test(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "you did it!!"})
-}
 
 func AddUserToClass(c *gin.Context) {
 	var payload = c.Param("classId")
@@ -25,16 +22,23 @@ func AddUserToClass(c *gin.Context) {
 	var userPayload = c.Param("userId")
 	user := GetUser(userPayload)
 
-	_, ok := user.Classes_Enrolled[class.ID.Hex()]
-	if ok {
+	if utils.Contains(user.ClassesEnrolled, class.ID) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "user already participated in this class"})
 		return
 	}
 
-	class.Participants[userPayload] = true
-	user.Classes_Enrolled[class.ID.Hex()] = class.Sks
-	user.Rem_sks -= class.Sks
-	if user.Rem_sks < 0 {
+	if err = utils.ArrayMethod(&models.Class{}, class.ID, "$push", "participants", user.ID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
+		return
+	}
+
+	if err = utils.ArrayMethod(&models.User{}, user.ID, "$push", "classes_enrolled", class.ID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
+		return
+	}
+
+	user.RemSks -= class.Sks
+	if user.RemSks < 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "cannot add more class"})
 		return
 	}
@@ -75,9 +79,19 @@ func DeleteUserFromClass(c *gin.Context) {
 	userId := c.Param("userId")
 	user := GetUser(userId)
 
-	delete(class.Participants, userId)
-	delete(user.Classes_Enrolled, class.ID.Hex())
-	user.Rem_sks += class.Sks
+	err = utils.ArrayMethod(&models.Class{}, class.ID, "$pull", "participants", user.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
+		return
+	}
+
+	err = utils.ArrayMethod(&models.User{}, user.ID, "$pull", "classes_enrolled", class.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
+		return
+	}
+
+	user.RemSks += class.Sks
 
 	err2 := mgm.Coll(&models.User{}).Update(user)
 	err3 := mgm.Coll(&models.Class{}).Update(class)
@@ -118,18 +132,21 @@ func DeleteClass(c *gin.Context) {
 	}
 
 	for k := range class.Participants {
-		user := GetUser(k)
-		delete(user.Classes_Enrolled, class.ID.Hex())
-		user.Rem_sks += class.Sks
+		user := GetUser(class.Participants[k].Hex())
+		if err = utils.ArrayMethod(&models.User{}, user.ID, "$pull", "classes_enrolled", class.ID); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			return
+		}
+
+		user.RemSks += class.Sks
 		err = mgm.Coll(&models.User{}).Update(user)
 
 		if err != nil {
 			panic(err)
 		}
 	}
-	err = mgm.Coll(&models.Class{}).Delete(class)
 
-	if err != nil {
+	if err = mgm.Coll(&models.Class{}).Delete(class); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
@@ -151,7 +168,7 @@ func EditClass(c *gin.Context) {
 		return
 	}
 
-	edit_map := payload.Edit_Map
+	edit_map := payload.EditMap
 	for k, v := range edit_map {
 		if k == "title" {
 			class.Title = v

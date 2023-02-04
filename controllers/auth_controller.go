@@ -15,8 +15,8 @@ import (
 )
 
 type SignInInput struct {
-	Email    	string `json:"email"  binding:"required"`
-	Password 	string `json:"password"  binding:"required"`
+	Email    string `json:"email"  binding:"required"`
+	Password string `json:"password"  binding:"required"`
 }
 
 func SignUpUser(c *gin.Context) {
@@ -79,31 +79,21 @@ func SignInUser(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("token", token, 3600, "/", "localhost", false, true)
-
 	c.JSON(http.StatusOK, gin.H{"status": "success", "token": token})
 }
 
-func GetCookie(c *gin.Context) {
-	token := c.GetHeader("Authorization")
-	token = strings.Split(token, " ")[1]
-
-	c.JSON(http.StatusOK, gin.H{"token": token})
-}
-
 func LogoutUser(c *gin.Context) {
-	c.SetCookie("token", "", -1, "/", "localhost", false, true)
-	c.JSON(http.StatusOK, gin.H{"status": "success"})
+	c.JSON(http.StatusOK, gin.H{"status": "Logout success"})
 }
 
 func GetUserDetails(c *gin.Context) {
 	currentUser := c.MustGet("currentUser").(*models.User)
 	userDetails := &models.UserDetails{
-		Username:   currentUser.Username,
-		Email:      currentUser.Email,
-		First_Name: currentUser.First_Name,
-		Last_Name:  currentUser.Last_Name,
-		Classes_Enrolled: currentUser.Classes_Enrolled,
+		Username:        currentUser.Username,
+		Email:           currentUser.Email,
+		FirstName:       currentUser.FirstName,
+		LastName:        currentUser.LastName,
+		ClassesEnrolled: currentUser.ClassesEnrolled,
 	}
 
 	c.JSON(http.StatusOK, userDetails)
@@ -117,12 +107,12 @@ func EditProfile(c *gin.Context) {
 		return
 	}
 
-	edit_map := payload.Edit_Map
-	for k, v := range edit_map {
+	editMap := payload.EditMap
+	for k, v := range editMap {
 		if k == "first_name" {
-			currentUser.First_Name = v
+			currentUser.FirstName = v
 		} else if k == "last_name" {
-			currentUser.Last_Name = v
+			currentUser.LastName = v
 		} else if k == "email" {
 			currentUser.Email = v
 		} else if k == "username" {
@@ -137,14 +127,3 @@ func EditProfile(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, gin.H{"message": "successfully edited"})
 }
-
-
-
-
-
-
-
-
-
-
-
